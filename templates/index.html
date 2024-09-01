@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Media Collection</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            padding: 20px;
+            margin: 0;
+            font-size: 16px;
+        }
+        .search-form {
+            margin-bottom: 20px;
+        }
+        .search-form input[type="text"] {
+            width: 300px;
+            padding: 5px;
+        }
+        .media-item {
+            padding: 20px;
+            border: 1px solid #ddd;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+        .player-container {
+            margin: 15px 0;
+        }
+        audio, video {
+            max-width: 100%;
+        }
+        .people-list {
+            margin-top: 10px;
+        }
+        .person {
+            display: inline-block;
+            background-color: #f0f0f0;
+            padding: 5px 10px;
+            margin: 2px;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Media Collection</h1>
+    <form class="search-form" action="/" method="get">
+        <input type="text" name="search" placeholder="Search media..." value="{{ search_query }}">
+        <button type="submit">Search</button>
+    </form>
+    <div id="mediaList">
+        {% if media_items %}
+            {% for item in media_items %}
+            <div class="media-item">
+                <h2>{{ item.title }}</h2>
+                <p><strong>Series:</strong> {{ item.series }} | <strong>Type:</strong> {{ item.type }} | <strong>Genre:</strong> {{ item.genre }} | <strong>Released:</strong> {{ item.release_date }}</p>
+                <p><strong>Description:</strong> {{ item.description }}</p>
+                <div class="people-list">
+                    <strong>People:</strong>
+                    {% for person in item.people %}
+                        <span class="person">{{ person.name }} ({{ person.role }})</span>
+                    {% endfor %}
+                </div>
+                <div class="player-container">
+                    {% if item.type == 'audio' %}
+                        <audio controls>
+                            <source src="{{ item.files[0].url }}" type="audio/mpeg">
+                            Your browser does not support the audio element.
+                        </audio>
+                    {% elif item.type == 'video' %}
+                        <video controls>
+                            <source src="{{ item.files[0].url }}" type="video/mp4">
+                            Your browser does not support the video tag.
+                        </video>
+                    {% endif %}
+                </div>
+                <div class="file-links">
+                    {% for file in item.files %}
+                        <a href="{{ file.url }}" target="_blank">Download File {{ loop.index }}</a>
+                        {% if not loop.last %} | {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <p>No results found for "{{ search_query }}".</p>
+        {% endif %}
+    </div>
+</body>
+</html>
